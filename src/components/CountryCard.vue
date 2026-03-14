@@ -6,6 +6,15 @@
         :alt="country.name.common"
         class="country-flag"
       />
+
+      <button
+        class="favorite-btn"
+        :class="{ active: store.isFavorite(country.cca3) }"
+        @click="store.toggleFavorite(country.cca3)"
+      >
+        {{ store.isFavorite(country.cca3) ? '★' : '☆' }}
+      </button>
+
       <span class="region-badge">
         {{ country.region || 'Sin región' }}
       </span>
@@ -24,18 +33,25 @@
           <strong>Población</strong>
           <span>{{ country.population.toLocaleString('es-CO') }}</span>
         </p>
+
+        <p>
+          <strong>Subregión</strong>
+          <span>{{ country.subregion || 'No disponible' }}</span>
+        </p>
       </div>
     </div>
   </article>
 </template>
 
-<script>
-export default {
-  props: {
-    country: {
-      type: Object,
-      required: true
-    }
+<script setup>
+import { useCountryStore } from '../stores/countryStore'
+
+defineProps({
+  country: {
+    type: Object,
+    required: true
   }
-}
+})
+
+const store = useCountryStore()
 </script>

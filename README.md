@@ -1,44 +1,100 @@
-# PaginaWeb_EyF
+# Explorador de Países - Vue 3
 
-This template should help get you started developing with Vue 3 in Vite.
+Este proyecto es una aplicación web desarrollada con **Vue 3** que permite explorar información básica de diferentes países utilizando una **API pública**. La aplicación permite buscar países, filtrarlos por región, ordenarlos alfabéticamente y guardar favoritos.
 
-## Recommended IDE Setup
+Además, se utiliza **Pinia** para manejar el estado global de la aplicación y **localStorage** para guardar las preferencias del usuario.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Recommended Browser Setup
+## Tecnologías utilizadas
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- Vue 3
+- Vite
+- Pinia
+- JavaScript
+- CSS
+- REST Countries API
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Funcionalidades principales
 
-## Project Setup
+### Búsqueda dinámica
+El usuario puede buscar países escribiendo en la barra de búsqueda. Los resultados se actualizan automáticamente mientras se escribe.
 
-```sh
+### Filtro por región
+Permite filtrar los países por región para facilitar la navegación entre los resultados.
+
+### Ordenamiento
+Los países pueden ordenarse de forma:
+- Ascendente (A-Z)
+- Descendente (Z-A)
+
+### Sistema de favoritos
+Cada país puede marcarse como favorito usando el botón de estrella en la tarjeta del país.
+
+### Persistencia de datos
+Los países favoritos y algunas preferencias del usuario se guardan en **localStorage**, por lo que se mantienen incluso si la página se recarga.
+
+### Manejo de estado global
+Se utiliza **Pinia** para gestionar el estado de la aplicación, incluyendo:
+- lista de países
+- favoritos
+- filtros activos
+- ordenamiento
+- búsqueda
+
+### Experiencia de usuario
+La aplicación incluye:
+- indicador de carga mientras se obtienen los datos
+- manejo de errores
+- mensaje cuando no se encuentran resultados
+- diseño responsive adaptable a diferentes pantallas
+
+---
+
+## Estructura del proyecto
+
+
+src
+├── components
+│ └── CountryCard.vue
+│
+├── stores
+│ └── countryStore.js
+│
+├── App.vue
+├── main.js
+└── style.css
+
+
+- **components** → Componentes reutilizables
+- **stores** → Manejo del estado global con Pinia
+- **App.vue** → Componente principal de la aplicación
+- **style.css** → Estilos generales de la interfaz
+
+---
+
+## Cómo ejecutar el proyecto
+
+1. Instalar las dependencias
+
+
 npm install
-```
 
-### Compile and Hot-Reload for Development
 
-```sh
+2. Ejecutar el servidor de desarrollo
+
+
 npm run dev
-```
 
-### Compile and Minify for Production
 
-```sh
-npm run build
-```
+3. Abrir la aplicación en el navegador
 
-### Lint with [ESLint](https://eslint.org/)
 
-```sh
-npm run lint
-```
+http://localhost:5173
+
+
+---
+
+## Autor Andres Eslava

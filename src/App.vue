@@ -2,126 +2,117 @@
   <div class="page-bg">
     <div class="app-shell">
       <header class="hero">
-        <div class="hero-badge">API pública · SITE MAP</div>
+        <span class="hero-badge">SITE MAP</span>
         <h1>Explorador de Países</h1>
         <p class="subtitle">
-          Descubre países, filtra por región y consulta información básica con un diseño más moderno y limpio.
+          Busca países, filtra por región, ordénalos y guarda tus favoritos.
         </p>
 
         <div class="controls">
-          <div class="input-group">
-            <span class="input-icon">🔎</span>
-            <input
-              v-model="search"
-              type="text"
-              placeholder="Buscar país..."
-              class="search"
-            />
-          </div>
+          <input
+            v-model="store.search"
+            @input="store.savePreferences()"
+            type="text"
+            placeholder="Buscar país..."
+            class="search"
+          />
 
-          <select v-model="selectedRegion" class="region-select">
+          <select v-model="store.selectedRegion" class="select" @change="store.savePreferences()">
             <option value="Todos">Todas las regiones</option>
-            <option v-for="region in regions" :key="region" :value="region">
+            <option v-for="region in store.regions" :key="region" :value="region">
               {{ region }}
             </option>
           </select>
+
+          <select v-model="store.sortOrder" class="select" @change="store.savePreferences()">
+            <option value="asc">A - Z</option>
+            <option value="desc">Z - A</option>
+          </select>
+        </div>
+
+        <div class="extra-controls">
+          <label class="favorites-toggle">
+            <input
+              type="checkbox"
+              v-model="store.showOnlyFavorites"
+              @change="store.savePreferences()"
+            />
+            <span>Solo favoritos</span>
+          </label>
+
+          <button class="clear-btn" @click="store.clearFilters()">
+            Limpiar filtros
+          </button>
         </div>
 
         <div class="top-info">
           <div class="info-pill">
             <span class="pill-label">Resultados</span>
-            <strong>{{ filteredCountries.length }}</strong>
+            <strong>{{ store.filteredCountries.length }}</strong>
           </div>
 
           <div class="info-pill">
-            <span class="pill-label">Región</span>
-            <strong>{{ selectedRegion }}</strong>
+            <span class="pill-label">Favoritos</span>
+            <strong>{{ store.favoritesCount }}</strong>
+          </div>
+
+          <div class="info-pill">
+            <span class="pill-label">Orden</span>
+            <strong>{{ store.sortOrder === 'asc' ? 'Ascendente' : 'Descendente' }}</strong>
+          </div>
+
+          <div class="info-pill">
+            <span class="pill-label">Región activa</span>
+            <strong>{{ store.selectedRegion }}</strong>
           </div>
         </div>
       </header>
 
       <section class="status-section">
-        <p v-if="loading" class="status-message">Cargando países...</p>
-        <p v-if="error" class="status-message error">{{ error }}</p>
+        <p v-if="store.loading" class="status-message">Cargando países...</p>
+        <p v-if="store.error" class="status-message error">{{ store.error }}</p>
       </section>
 
-      <section v-if="!loading && !error" class="countries-grid">
+      <section
+        v-if="!store.loading && !store.error && store.filteredCountries.length"
+        class="countries-grid"
+      >
         <CountryCard
-          v-for="country in filteredCountries"
+          v-for="country in store.filteredCountries"
           :key="country.cca3"
           :country="country"
         />
       </section>
 
-      <p
-        v-if="!loading && !error && filteredCountries.length === 0"
-        class="status-message empty-message"
+      <div
+        v-if="!store.loading && !store.error && !store.filteredCountries.length"
+        class="empty-state"
       >
-        No se encontraron países con ese filtro.
-      </p>
+        <h2>No encontramos países</h2>
+        <p>
+          Prueba cambiando la búsqueda, seleccionando otra región o desactivando el filtro de favoritos.
+        </p>
+        <button class="empty-btn" @click="store.clearFilters()">
+          Ver todos los países
+        </button>
+      </div>
+
+      <footer class="footer">
+        <p>Explorador de Países · SM</p>
+      </footer>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted } from 'vue'
+import { useCountryStore } from './stores/countryStore'
 import CountryCard from './components/CountryCard.vue'
 
-export default {
-  components: {
-    CountryCard
-  },
+const store = useCountryStore()
 
-  data() {
-    return {
-      countries: [],
-      search: '',
-      selectedRegion: 'Todos',
-      loading: true,
-      error: ''
-    }
-  },
-
-  async mounted() {
-    try {
-      const res = await fetch(
-        'https://restcountries.com/v3.1/all?fields=name,flags,capital,region,population,cca3'
-      )
-
-      if (!res.ok) {
-        throw new Error('No se pudo cargar la información de la API.')
-      }
-
-      const data = await res.json()
-
-      this.countries = data.sort((a, b) =>
-        a.name.common.localeCompare(b.name.common)
-      )
-    } catch (error) {
-      console.error(error)
-      this.error = 'Error al cargar los países desde la API.'
-    } finally {
-      this.loading = false
-    }
-  },
-
-  computed: {
-    regions() {
-      return [...new Set(this.countries.map((country) => country.region))].filter(Boolean)
-    },
-
-    filteredCountries() {
-      return this.countries.filter((country) => {
-        const matchesSearch = country.name.common
-          .toLowerCase()
-          .includes(this.search.toLowerCase())
-
-        const matchesRegion =
-          this.selectedRegion === 'Todos' ||
-          country.region === this.selectedRegion
-
-        return matchesSearch && matchesRegion
-      })
-    }
-  }
-}
+onMounted(() => {
+  store.loadPreferences()
+  store.fetchCountries()
+})
 </script>
